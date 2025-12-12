@@ -5,7 +5,7 @@ import math
 from collections import Counter
 
 # --- CONFIGURAÇÃO ---
-ARQUIVOS_PARA_LER = 100
+ARQUIVOS_PARA_LER = 250
 MIN_MUSICAS_PLAYLIST = 20
 
 pasta_dados = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'spotify-million', 'data')
@@ -46,7 +46,62 @@ for nome_arq in arquivos:
     count += 1
     if count % 10 == 0: print(f"Processados {count}/{len(arquivos)} arquivos...")
 
-print(f"\nGrafo pronto. {G.number_of_nodes()} nós carregados.")
+# --- MÉTRICAS ANTES DO SMART PRUNING ---
+print("\n📊 CALCULANDO MÉTRICAS ANTES DO SMART PRUNING...")
+nós_antes = G.number_of_nodes()
+arestas_antes = G.number_of_edges()
+grau_medio_antes = sum(dict(G.degree()).values()) / nós_antes if nós_antes > 0 else 0
+
+# --- SMART PRUNING ---
+print("\n🔪 APLICANDO SMART PRUNING...")
+
+# Remove músicas que aparecem em muito poucas playlists
+LIMIAR_MUSICAS = 2  # Mínimo de playlists por música
+musicas_remover = []
+for musica in [n for n, d in G.nodes(data=True) if d.get('type') == 'music']:
+    grau = G.degree(musica)
+    if grau < LIMIAR_MUSICAS:
+        musicas_remover.append(musica)
+
+G.remove_nodes_from(musicas_remover)
+print(f"   Removidas {len(musicas_remover)} músicas com grau < {LIMIAR_MUSICAS}")
+
+# Remove playlists que ficaram vazias após remoção
+playlists_remover = []
+for playlist in [n for n, d in G.nodes(data=True) if d.get('type') == 'playlist']:
+    grau = G.degree(playlist)
+    if grau == 0:
+        playlists_remover.append(playlist)
+
+G.remove_nodes_from(playlists_remover)
+print(f"   Removidas {len(playlists_remover)} playlists vazias")
+
+# --- MÉTRICAS DEPOIS DO SMART PRUNING ---
+print("\n📊 CALCULANDO MÉTRICAS DEPOIS DO SMART PRUNING...")
+nós_depois = G.number_of_nodes()
+arestas_depois = G.number_of_edges()
+grau_medio_depois = sum(dict(G.degree()).values()) / nós_depois if nós_depois > 0 else 0
+
+# --- TABELA COMPARATIVA ---
+print("\n" + "="*70)
+print("📈 TABELA COMPARATIVA - SMART PRUNING")
+print("="*70)
+print(f"{'MÉTRICA':<25} {'ANTES':<20} {'DEPOIS':<20}")
+print("-"*70)
+print(f"{'Nós (vértices)':<25} {nós_antes:<20} {nós_depois:<20}")
+print(f"{'Arestas':<25} {arestas_antes:<20} {arestas_depois:<20}")
+print(f"{'Grau Médio':<25} {grau_medio_antes:<20.2f} {grau_medio_depois:<20.2f}")
+
+# Calcula variações
+var_nos = ((nós_depois - nós_antes) / nós_antes * 100) if nós_antes > 0 else 0
+var_arestas = ((arestas_depois - arestas_antes) / arestas_antes * 100) if arestas_antes > 0 else 0
+var_grau = ((grau_medio_depois - grau_medio_antes) / grau_medio_antes * 100) if grau_medio_antes > 0 else 0
+
+print("-"*70)
+print(f"{'REDUÇÃO (%)':<25} {var_nos:<20.2f}% {var_arestas:<20.2f}%")
+print("="*70 + "\n")
+
+print(f"Grafo pronto. {G.number_of_nodes()} nós carregados.")
 print("="*60)
 
 # --- FUNÇÃO DE BUSCA E RECOMENDAÇÃO ---
