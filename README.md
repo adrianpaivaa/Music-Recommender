@@ -4,21 +4,21 @@ Um sistema de recomendação de músicas baseado em análise de grafos bipartido
 
 ## 📋 Descrição
 
-Este projeto analisa dados do Spotify Million Playlist Dataset para descobrir comunidades de músicas e playlists, utilizando:
+Este projeto analisa dados do Spotify Million Playlist Dataset para descobrir comunidades de músicas e playlists, aplicando técnicas avançadas de processamento de grafos. O sistema oferece duas abordagens:
 
-- **Grafo Bipartido**: Representação música-playlist
-- **LSH (Locality Sensitive Hashing)**: Identificação eficiente de músicas similares
-- **Louvain**: Detecção de comunidades em grafos
-- **NetworkX**: Análise e manipulação de grafos
-- **Gephi**: Visualização e análise exploratória
+1. **Console Interativo** (`console.py`): Busca e recomendação em tempo real baseada em similaridade de playlists
+2. **Análise Exploratória** (`visualizar_cluster.py`): Processamento em lote com LSH e detecção de comunidades
 
 ## 🚀 Funcionalidades
 
-- ✅ Processamento de grandes volumes de dados (Spotify Million Playlist)
-- ✅ Filtragem inteligente de playlists e músicas (força mínima)
-- ✅ Aplicação de LSH para encontrar similaridades eficientemente
-- ✅ Detecção automática de comunidades
-- ✅ Exportação em formato GEXF para visualização no Gephi
+- ✅ Carregamento e processamento de 250 arquivos JSON (Spotify Million Playlist)
+- ✅ **Smart Pruning**: Remove músicas raras e playlists vazias automaticamente
+- ✅ **Tabela Comparativa**: Mostra métricas antes/depois do pruning
+- ✅ **Grafo Bipartido**: Representação música-playlist
+- ✅ **LSH (Locality Sensitive Hashing)**: Identificação eficiente de músicas similares
+- ✅ **Louvain**: Detecção automática de comunidades
+- ✅ **Sistema de Recomendação**: Busca interativa com heurística IIF (Inverse Item Frequency)
+- ✅ **Exportação GEXF**: Visualização em Gephi
 
 ## 📦 Instalação
 
@@ -33,83 +33,213 @@ Este projeto analisa dados do Spotify Million Playlist Dataset para descobrir co
 pip install networkx python-louvain datasketch
 ```
 
-## 🔧 Uso
+## 📂 Estrutura de Arquivos Esperada
 
-### Executar análise completa
-
-```bash
-python src/visualizar_cluster.py
-```
-
-**Saída**: `comunidades_globais_otimizado.gexf`
-
-### Visualizar no Gephi
-
-1. Abra o Gephi
-2. Importe `comunidades_globais_otimizado.gexf`
-3. Colore os nós por `modularity_class` para ver as comunidades
-
-## ⚙️ Configuração
-
-Edite as variáveis de configuração em `src/visualizar_cluster.py`:
-
-```python
-ARQUIVOS = 20              # Número de arquivos a processar
-MIN_MUSICAS_PL = 50        # Mínimo de músicas por playlist
-LIMIAR_PLAYLISTS = 20      # Mínimo de playlists por música
-TOP_CLUSTERS = 6           # Número de comunidades a manter
-```
-
-## 🏗️ Arquitetura
+O projeto espera a seguinte estrutura:
 
 ```
-Dados Spotify Million
-        ↓
-    Filtros
-        ↓
-Grafo Bipartido (música-playlist)
-        ↓
-  LSH (similaridade)
-        ↓
-Grafo Filtrado
-        ↓
-  Louvain (comunidades)
-        ↓
-   Grafo Final
-        ↓
-GEXF (Gephi)
-```
-
-## 📊 Estrutura do Projeto
-
-```
-├── src/
-│   ├── visualizar_cluster.py     # Script principal
-│   ├── analise_dados.py          # Análise de dados
-│   ├── console.py                # Interface console
-│   ├── validacao_modelo.py       # Validação
-│   └── visualizar_cluster.py     # Visualização
+MusicRecommender/
 ├── spotify-million/
-│   ├── data/                     # Dados do Spotify (não versionado)
+│   ├── data/                    # 250 arquivos JSON do Spotify
+│   │   ├── mpd.slice.0-999.json
+│   │   ├── mpd.slice.1000-1999.json
+│   │   ├── mpd.slice.2000-2999.json
+│   │   └── ... (até 250 arquivos)
 │   └── README.md
+├── src/
+│   ├── console.py               # Interface de recomendação interativa
+│   ├── visualizar_cluster.py    # Análise com LSH e Louvain
+│   ├── analise_dados.py
+│   ├── validacao_modelo.py
+│   └── grafico_cauda_longa.png
 ├── .gitignore
 ├── LICENSE
 └── README.md
 ```
 
-## 🔍 O que é LSH?
+### Formato dos Arquivos JSON
 
-Locality Sensitive Hashing é uma técnica para encontrar itens similares rapidamente em grandes conjuntos de dados. No contexto deste projeto:
+Cada arquivo JSON segue a estrutura:
 
-1. Cada música é representada como um MinHash baseado nas playlists que contém
-2. Músicas com assinaturas similares são identificadas eficientemente
-3. Apenas pares similares são conectados no grafo
+```json
+{
+  "playlists": [
+    {
+      "pid": 1,
+      "tracks": [
+        {
+          "track_uri": "spotify:track:...",
+          "track_name": "Song Name",
+          "artist_name": "Artist Name"
+        }
+      ]
+    }
+  ]
+}
+```
 
-Isso reduz drasticamente a complexidade computacional comparado a comparações diretas.
+**Importante**: O projeto mantém apenas 250 arquivos para otimizar performance. Se você precisar adicionar mais dados, coloque-os em `spotify-million/data/` com o padrão de nomenclatura `mpd.slice.XXXXX-XXXXX.json`.
 
-## 📈 Louvain
+## 🔧 Como Usar
 
-O algoritmo de Louvain detecta comunidades maximizando a modularidade do grafo. Comunidades representam grupos de músicas frequentemente encontradas juntas em playlists.
+### 1. Console Interativo (Recomendação em Tempo Real)
+
+Execute o programa principal:
+
+```bash
+cd src
+python console.py
+```
+
+**O que esperar:**
+1. Carregamento dos 250 arquivos JSON
+2. Tabela comparativa mostrando smart pruning:
+   ```
+   ======================================================================
+   📈 TABELA COMPARATIVA - SMART PRUNING
+   ======================================================================
+   MÉTRICA                   ANTES                DEPOIS               
+   ----------------------------------------------------------------------
+   Nós (vértices)            45280                38450                
+   Arestas                   89500                72300                
+   Grau Médio               3.95                 3.76                 
+   ----------------------------------------------------------------------
+   REDUÇÃO (%)               -15.14%              -19.30%
+   ======================================================================
+   ```
+3. Loop interativo de busca
+
+**Fluxo de Uso:**
+
+```
+Digite o nome de uma música (ou 'sair'): imagine
+
+Encontrei estas músicas:
+[1] Imagine - John Lennon
+[2] Imagine - Imagine Dragons
+[3] Imagine That - First Aid Kit
+
+Qual delas é a correta? (Digite o número, ou 0 para cancelar): 1
+
+Gerando recomendações baseadas em: 'Imagine - John Lennon'...
+
+QUEM OUVE ISSO TAMBÉM OUVE:
+   1. Let It Be - The Beatles (Score: 45.23)
+   2. All You Need Is Love - The Beatles (Score: 32.15)
+   3. The Long and Winding Road - The Beatles (Score: 28.67)
+   ...
+```
+
+### 2. Análise com LSH e Comunidades
+
+Execute o script de análise:
+
+```bash
+cd src
+python visualizar_cluster.py
+```
+
+**Saída**: `comunidades_globais_otimizado.gexf` (abrir no Gephi)
+
+**Resultado**: Grafo bipartido com comunidades detectadas via Louvain
+
+## ⚙️ Configuração
+
+### Console.py
+
+```python
+ARQUIVOS_PARA_LER = 250         # Número de arquivos JSON a processar
+MIN_MUSICAS_PLAYLIST = 20       # Mínimo de músicas por playlist
+LIMIAR_MUSICAS = 2              # Mínimo de playlists por música (smart pruning)
+```
+
+### Visualizar_cluster.py
+
+```python
+ARQUIVOS = 20                   # Arquivos para análise de comunidades
+MIN_MUSICAS_PL = 50             # Mínimo de músicas por playlist (forte)
+LIMIAR_PLAYLISTS = 20           # Mínimo de playlists por música
+TOP_CLUSTERS = 6                # Número de comunidades a manter
+```
+
+## 🏗️ Arquitetura
+
+### Console.py (Recomendação em Tempo Real)
+
+```
+1. Carregamento de dados
+   ↓
+2. Construção do grafo bipartido
+   ↓
+3. Smart Pruning (remove outliers)
+   ↓
+4. Loop interativo:
+   - Busca (substring matching)
+   - IIF Score (Inverse Item Frequency)
+   - Top 15 recomendações
+```
+
+### Visualizar_cluster.py (Análise de Comunidades)
+
+```
+1. Leitura e filtragem de dados
+   ↓
+2. Grafo bipartido reduzido
+   ↓
+3. LSH (Locality Sensitive Hashing)
+   - MinHash para cada música
+   - Detecção de similaridade
+   ↓
+4. Filtragem por similaridade
+   ↓
+5. Louvain (detecção de comunidades)
+   ↓
+6. Top 6 maiores comunidades
+   ↓
+7. Exportação GEXF (Gephi)
+```
+
+## 📊 Métricas e Smart Pruning
+
+O **Smart Pruning** executa automaticamente:
+
+1. **Remove músicas raras**: Músicas com < 2 playlists
+2. **Remove playlists vazias**: Após remoção de músicas
+3. **Exibe comparação**: Antes/depois com variação percentual
+
+Isso torna o grafo mais denso e relevante para recomendações.
+
+## 🔍 O que é LSH (Locality Sensitive Hashing)?
+
+LSH é uma técnica para encontrar itens similares rapidamente:
+
+1. Cada música é representada como um **MinHash** (assinatura) baseado nas playlists que contém
+2. Músicas com assinaturas similares são identificadas em $ O(\log n) $ tempo
+3. Apenas pares similares (threshold ≥ 0.5) são conectados
+
+**Vantagem**: Reduz complexidade de $ O(n^2) $ para $ O(n \log n) $
+
+## 📈 Heurística IIF (Inverse Item Frequency)
+
+O sistema de recomendação usa a fórmula:
+
+$$\text{score}(m) = \sum_{\text{pl} \in \text{vizinhos}(m)} \frac{1}{\log(|\text{vizinhos}(pl)| + 1) + 0.1}$$
+
+**Intuição**:
+- Playlists **pequenas e específicas** pesam MAIS (mais informativas)
+- Playlists **gigantes e genéricas** pesam MENOS (menos informativos)
+
+Exemplo:
+- Playlist com 20 músicas: peso ≈ 0.32 (específica)
+- Playlist com 100 músicas: peso ≈ 0.21 (genérica)
+
+## 🎯 Algoritmo Louvain
+
+O Louvain detecta comunidades maximizando a **modularidade**:
+
+- Representa grupos de músicas frequentemente encontradas juntas
+- Não requer número de clusters predefinido
+- Rápido e escalável
 
 ## 📝 Licença
 
