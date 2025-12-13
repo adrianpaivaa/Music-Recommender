@@ -6,8 +6,8 @@ Um sistema de recomendação de músicas baseado em análise de grafos bipartido
 
 Este projeto analisa dados do Spotify Million Playlist Dataset para descobrir comunidades de músicas e playlists, aplicando técnicas avançadas de processamento de grafos. O sistema oferece duas abordagens:
 
-1. *Console Interativo* (console.py): Busca e recomendação em tempo real baseada em similaridade de playlists
-2. *Análise Exploratória* (visualizar_cluster.py): Processamento em lote com LSH para detecção e visualização de comunidades
+1. **Console Interativo** (console.py): Busca e recomendação em tempo real baseada em similaridade de playlists
+2. **Análise Exploratória** (visualizar_cluster.py): Processamento em lote com LSH para detecção e visualização de comunidades
 
 ## 🚀 Funcionalidades
 
@@ -36,7 +36,7 @@ pip install networkx python-louvain datasketch
 
 O projeto contém a seguinte disposição de arquivos:
 
-
+```
 MusicRecommender/
 ├── spotify-million/
 │   ├── data/                    # 250 arquivos JSON do Spotify
@@ -52,12 +52,12 @@ MusicRecommender/
 ├── .gitignore
 ├── LICENSE
 └── README.md
-
+```
 
 ### Formato dos Arquivos JSON
 
 Cada arquivo JSON segue a seguinte estrutura:
-
+```
 json
 {
   "playlists": [
@@ -73,9 +73,9 @@ json
     }
   ]
 }
+```
 
-
-*Importante*: O projeto mantém apenas 250 arquivos para otimizar performance. Se você precisar adicionar mais dados, coloque-os em spotify-million/data/ com o padrão de nomenclatura mpd.slice.XXXXX-XXXXX.json.
+**Importante**: O projeto mantém apenas 250 arquivos para otimizar performance. Se você precisar adicionar mais dados, coloque-os em spotify-million/data/ com o padrão de nomenclatura mpd.slice.XXXXX-XXXXX.json.
 
 ## 🔧 Como Usar
 
@@ -92,7 +92,7 @@ python console.py
 1. Carregamento dos 250 arquivos JSON
 2. Loop interativo de busca
 
-*Fluxo de Uso:*
+**Fluxo de Uso:**
 
 
 Digite o nome de uma música (ou 'sair'): imagine
@@ -122,28 +122,28 @@ cd src
 python visualizar_cluster.py
 
 
-*Saída*: clusters_otimizado.gexf (abrir no Gephi)
+**Saída**: clusters_otimizado.gexf (abrir no Gephi)
 
-*Resultado*: Grafo bipartido com comunidades detectadas via Louvain
+**Resultado**: Grafo bipartido com comunidades detectadas via Louvain
 
 ## ⚙️ Configurações
 
 ### Console.py
-
+```
 python
 ARQUIVOS_PARA_LER = 250         # Número de arquivos JSON a processar
 MIN_MUSICAS_PLAYLIST = 20       # Mínimo de músicas por playlist
 LIMIAR_MUSICAS = 5              # Mínimo de playlists por música (smart pruning)
-
+```
 
 ### Visualizar_cluster.py
-
+```
 python
 ARQUIVOS = 20                   # Arquivos para análise de comunidades
 MIN_MUSICAS_PL = 50             # Mínimo de músicas por playlist (forte)
 LIMIAR_PLAYLISTS = 20           # Mínimo de playlists por música
 TOP_CLUSTERS = 6                # Número de comunidades a manter
-
+```
 
 ## 🏗️ Arquitetura
 
@@ -186,8 +186,8 @@ TOP_CLUSTERS = 6                # Número de comunidades a manter
 
 O *Smart Pruning* otimiza a consistência do grafo através de um pipeline automatizado:
 
-1. *Remove músicas raras*: Remoção de faixas com baixa relevância (presentes em < 5 playlists).
-2. *Limpeza de playlists vazias*: Exclusão automática de playlists que se tornaram vazias após a filtragem.
+1. **Remove músicas raras**: Remoção de faixas com baixa relevância (presentes em < 5 playlists).
+2. **Limpeza de playlists vazias**: Exclusão automática de playlists que se tornaram vazias após a filtragem.
 
 Isso torna o grafo mais denso e relevante para recomendações.
 
@@ -208,7 +208,7 @@ O sistema de recomendação usa a fórmula:
 
 $$\text{score}(m) = \sum_{\text{pl} \in \text{vizinhos}(m)} \frac{1}{\log(|\text{vizinhos}(pl)| + 1) + 0.1}$$
 
-*Intuição*:
+**Intuição**:
 - Playlists *pequenas e específicas* pesam MAIS (mais informativas)
 - Playlists *gigantes e genéricas* pesam MENOS (menos informativos)
 
@@ -228,10 +228,10 @@ O algoritmo Louvain é um método hierárquico que detecta comunidades maximizan
 
 Este projeto está devidamente licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
-## 👤 Autor
+## 👤 Autores
 
-Adrian Paiva - [GitHub](https://github.com/adrianpaivaa)
-Heitor Xavier - [GitHub](https://github.com/heitorcostax)
+- **Adrian Paiva** — [GitHub](https://github.com/adrianpaivaa)
+- **Heitor Xavier** — [GitHub](https://github.com/heitorcostax)
 
 ## 🙏 Referências
 
