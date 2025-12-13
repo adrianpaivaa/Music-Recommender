@@ -219,7 +219,7 @@ Este repositório acompanha o artigo científico desenvolvido como parte do trab
 - 📅 **Ano**: 2025
 
 📎 **Acesso ao PDF**:  
-➡️ [Clique aqui para acessar o artigo em PDF](artigo.pdf)
+➡️ [Clique aqui para acessar o artigo em PDF](Algoritmos de Recomendação de Músicas Baseado em Grafos.pdf)
 
 > O artigo descreve detalhadamente a metodologia, a modelagem em grafos, a estratégia de Smart Pruning, o uso de LSH, o algoritmo de Louvain e os resultados qualitativos obtidos com o Spotify Million Playlist Dataset.
 
