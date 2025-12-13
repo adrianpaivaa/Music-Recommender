@@ -82,11 +82,11 @@ json
 ### 1. Console Interativo (Recomendação em Tempo Real)
 
 Execute o programa principal:
-
+```
 bash
 cd src
 python console.py
-
+```
 
 *O que esperar:*
 1. Carregamento dos 250 arquivos JSON
@@ -116,11 +116,11 @@ QUEM OUVE ISSO TAMBÉM OUVE:
 ### 2. Análise com LSH e Comunidades
 
 Execute o script de análise:
-
+```
 bash
 cd src
 python visualizar_cluster.py
-
+```
 
 **Saída**: clusters_otimizado.gexf (abrir no Gephi)
 
