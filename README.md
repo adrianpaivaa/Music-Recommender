@@ -209,8 +209,8 @@ O sistema de recomendação usa a fórmula:
 $$\text{score}(m) = \sum_{\text{pl} \in \text{vizinhos}(m)} \frac{1}{\log(|\text{vizinhos}(pl)| + 1) + 0.1}$$
 
 **Intuição**:
-- Playlists *pequenas e específicas* pesam MAIS (mais informativas)
-- Playlists *gigantes e genéricas* pesam MENOS (menos informativos)
+- Playlists pequenas e específicas pesam MAIS (mais informativas)
+- Playlists gigantes e genéricas pesam MENOS (menos informativos)
 
 Exemplo:
 - Playlist com 20 músicas: peso ≈ 0.32 (específica)
