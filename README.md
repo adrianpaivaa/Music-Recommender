@@ -1,24 +1,23 @@
 # Music Recommender
 
-Um sistema de recomendação de músicas baseado em análise de grafos bipartidos, detecção de comunidades e uso de Locality Sensitive Hashing (LSH).
+Um sistema de recomendação de músicas baseado em análise de grafos bipartidos, detecção de comunidades e uso de Ponderação IIF.
 
 ## 📋 Descrição
 
 Este projeto analisa dados do Spotify Million Playlist Dataset para descobrir comunidades de músicas e playlists, aplicando técnicas avançadas de processamento de grafos. O sistema oferece duas abordagens:
 
 1. *Console Interativo* (console.py): Busca e recomendação em tempo real baseada em similaridade de playlists
-2. *Análise Exploratória* (visualizar_cluster.py): Processamento em lote com LSH e detecção de comunidades
+2. *Análise Exploratória* (visualizar_cluster.py): Processamento em lote com LSH para detecção e visualização de comunidades
 
 ## 🚀 Funcionalidades
 
 - ✅ Carregamento e processamento de 250 arquivos JSON (Spotify Million Playlist)
 - ✅ *Smart Pruning*: Remove músicas raras e playlists vazias automaticamente
-- ✅ *Tabela Comparativa*: Mostra métricas antes/depois do pruning
 - ✅ *Grafo Bipartido*: Representação música-playlist
 - ✅ *LSH (Locality Sensitive Hashing)*: Identificação eficiente de músicas similares
 - ✅ *Louvain*: Detecção automática de comunidades
 - ✅ *Sistema de Recomendação*: Busca interativa com heurística IIF (Inverse Item Frequency)
-- ✅ *Exportação GEXF*: Visualização em Gephi
+- ✅ *Exportação GEXF*: Para visualização dos grafos no Gephi
 
 ## 📦 Instalação
 
@@ -50,7 +49,6 @@ MusicRecommender/
 │   ├── console.py               
 │   ├── visualizar_cluster.py    
 │   ├── analise_dados.py
-│   ├── validacao_modelo.py
 ├── .gitignore
 ├── LICENSE
 └── README.md
@@ -124,18 +122,18 @@ cd src
 python visualizar_cluster.py
 
 
-*Saída*: comunidades_globais_otimizado.gexf (abrir no Gephi)
+*Saída*: clusters_otimizado.gexf (abrir no Gephi)
 
 *Resultado*: Grafo bipartido com comunidades detectadas via Louvain
 
-## ⚙️ Configuração
+## ⚙️ Configurações
 
 ### Console.py
 
 python
 ARQUIVOS_PARA_LER = 250         # Número de arquivos JSON a processar
 MIN_MUSICAS_PLAYLIST = 20       # Mínimo de músicas por playlist
-LIMIAR_MUSICAS = 2              # Mínimo de playlists por música (smart pruning)
+LIMIAR_MUSICAS = 5              # Mínimo de playlists por música (smart pruning)
 
 
 ### Visualizar_cluster.py
@@ -188,9 +186,8 @@ TOP_CLUSTERS = 6                # Número de comunidades a manter
 
 O *Smart Pruning* otimiza a consistência do grafo através de um pipeline automatizado:
 
-1. *Remove músicas raras*: Remoção de faixas com baixa relevância (presentes em < 2 playlists).
+1. *Remove músicas raras*: Remoção de faixas com baixa relevância (presentes em < 5 playlists).
 2. *Limpeza de playlists vazias*: Exclusão automática de playlists que se tornaram vazias após a filtragem.
-3. *Exibe comparação*: Comparativo estatístico (pré/pós-processamento) com as variações percentuais de nós e arestas.
 
 Isso torna o grafo mais denso e relevante para recomendações.
 
@@ -236,14 +233,10 @@ Este projeto está devidamente licenciado sob a Licença MIT - veja o arquivo [L
 Adrian Paiva - [GitHub](https://github.com/adrianpaivaa)
 Heitor Xavier - [GitHub](https://github.com/heitorcostax)
 
-## 🙏 Agradecimentos
+## 🙏 Referências
 
 - [Spotify Million Playlist Dataset](https://www.aicrowd.com/challenges/spotify-million-playlist-dataset-challenge)
 - [NetworkX](https://networkx.org/)
 - [python-louvain](https://github.com/taynaud/python-louvain)
 - [Datasketch](https://github.com/ekzhu/datasketch)
 - [Gephi](https://gephi.org/)
-
-## 📧 Contato
-
-Para dúvidas ou sugestões, abra uma issue no repositório.
